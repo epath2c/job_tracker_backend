@@ -1,4 +1,4 @@
-import pkg from "pg";
+import pkg from "pg"; // Postgres client
 const { Pool } = pkg;
 import dotenv from "dotenv";
 
