@@ -5,6 +5,10 @@ import dotenv from "dotenv"; //environment variables
 // use swagger for API testing and documenting
 import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
+// import path from "path";
+// import { fileURLToPath } from "url";
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
 /**
  * customized routes
@@ -21,7 +25,7 @@ const swaggerSpec = swaggerJsdoc({
             version: "1.0.0",
         },
     },
-    apis: ["./routes/*.js"], // where your route files live
+    apis: [`./src/routes/*.js`], // where your route files live
 });
 
 const app = express();
@@ -32,7 +36,8 @@ app.use("/api/jobs", jobRoutes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get("/", (req, res) => {
-    res.send("API running");
+    res.json(swaggerSpec);
+    // res.send("API running");
 });
 
 const PORT = process.env.PORT || 5000; // process is built into Node.js
