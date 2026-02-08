@@ -18,7 +18,7 @@ router.get("/result-types", (req, res) => {
  */
 router.get("/", async (_req, res) => {
     try {
-        const { rows } = await pool.query(`SELECT * FROM jobs ORDER BY applied_at DESC`);
+        const { rows } = await pool.query(`SELECT * FROM jobs ORDER BY id DESC`);
         res.json(rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -114,16 +114,28 @@ router.get("/:id", async (req, res) => {
  *                   type: string
  */
 router.post("/", async (req, res) => {
-    const { company, title, cover_letter, expectation, result, company_rate, referral, custom_fields, remark } =
-        req.body;
+    const {
+        company,
+        title,
+        applied_at,
+        cover_letter,
+        expectation,
+        result,
+        company_rate,
+        referral,
+        custom_fields,
+        remark,
+    } = req.body;
     const cleanedExpectation = expectation === "" ? null : expectation;
     const cleanedCompanyRate = company_rate === "" ? null : company_rate;
+    const cleanedAppliedAt =
+        applied_at === undefined || applied_at === "" || applied_at === null ? new Date() : applied_at;
     try {
         const { rows } = await pool.query(
             `
       INSERT INTO jobs
-      (company, title, cover_letter, expectation, result, company_rate, referral, custom_fields, remark)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+      (company, title, cover_letter, expectation, result, company_rate, referral, custom_fields, remark, applied_at)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
       RETURNING *
       `,
             [
@@ -136,6 +148,7 @@ router.post("/", async (req, res) => {
                 referral,
                 custom_fields ?? {},
                 remark,
+                cleanedAppliedAt,
             ]
         );
         res.json(rows[0]);
